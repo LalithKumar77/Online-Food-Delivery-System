@@ -1,0 +1,115 @@
+-- Customer table
+CREATE TABLE IF NOT EXISTS Customer (
+    Customer_id INT AUTO_INCREMENT UNIQUE, 
+    CustomerName VARCHAR(30) NOT NULL,
+    mobile_no NUMERIC(10) NOT NULL UNIQUE,
+    Email VARCHAR(30) NOT NULL UNIQUE,
+    Address VARCHAR(100) NOT NULL,
+    Pincode NUMERIC(6) NOT NULL,
+    CONSTRAINT Customer_PK PRIMARY KEY (Customer_id)
+);
+
+Create Table if not exists Restaurant(
+		Restaurant_Id INT AUTO_INCREMENT UNIQUE,
+		Restaurant_Name varchar(30) NOT NULL,
+        Restaurant_address varchar(150) NOT NULL,
+        Phone varchar(20) UNIQUE NOT NULL,
+        WorkingHours varchar(50) NOT NULL,
+		Pincode NUMERIC(6) NOT NULL,
+        CONSTRAINT Restaurant_PK PRIMARY KEY (Restaurant_id)
+	);
+
+CREATE TABLE IF NOT EXISTS Chooses (
+		Customer_Id INT,
+		Restaurant_Id INT,
+		FOREIGN KEY (Customer_Id) REFERENCES Customer(Customer_id),
+		FOREIGN KEY (Restaurant_Id) REFERENCES Restaurant(Restaurant_Id),
+		PRIMARY KEY (Customer_Id, Restaurant_Id)
+);
+
+
+Create Table if not exists Menu(
+		Menu_id INT AUTO_INCREMENT,
+		Restaurant_Id INT,
+        Item_name varchar(50) NOT NULL,
+        Description TEXT,
+		Price Decimal(10,2),
+        CONSTRAINT Menu_PK PRIMARY KEY (Menu_id),
+        CONSTRAINT Menu_FK FOREIGN KEY (Restaurant_Id) REFERENCES Restaurant(Restaurant_Id)
+	);
+      
+
+Create Table if not exists cart(
+		cart_id INT AUTO_INCREMENT,
+        customer_id INT,
+        Restaurant_id INT,
+        menu_id INT,
+		-- OrderDate Timestamp default current_timestamp, 
+        Quantity INT,
+        Subtotal decimal(10,2),
+        gst decimal(10,2),
+        delivery_charges decimal(10,2),
+        Total Decimal(10,2),
+        DeliveryAddress varchar(200),
+        CONSTRAINT cart_PK PRIMARY KEY (cart_id),
+        CONSTRAINT cart_Customer_FK FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id),
+        CONSTRAINT cart_Menu_FK FOREIGN KEY (menu_id) REFERENCES Menu(Menu_id),
+		CONSTRAINT restaurant_FK FOREIGN KEY (Restaurant_id) REFERENCES Restaurant(Restaurant_id)
+        );
+        
+Create  Table if not exists Payment(
+		Payment_id INT AUTO_INCREMENT,
+        Cart_id INT,
+        Amount decimal(10,2),
+        PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PaymentMethod varchar(30),
+        Pay_Status varchar(10),
+        CONSTRAINT Payment_PK PRIMARY KEY (Payment_id),
+		CONSTRAINT Payment_FK FOREIGN KEY (cart_id) REFERENCES cart(cart_id)
+        );
+
+        
+Create Table if not exists Cancellation(
+		 Cancellation_id numeric(15),
+         cart_id INT,
+         Cancellation_date DATE,
+         Cancellation_time TIME,
+         Refund Decimal(10,2),
+         Reason varchar(50),
+         CONSTRAINT Cancellation_PK PRIMARY KEY(Cancellation_id),
+		 CONSTRAINT Cancellation_FK FOREIGN KEY (cart_id) REFERENCES cart(cart_id)
+         );    
+
+Create Table if not exists Deliveryboy(
+		DB_ID INT AUTO_INCREMENT,
+		DB_Name varchar(10) NOT NULL,
+        DB_MobileNo numeric(10) NOT NULL UNIQUE,
+        Vehicle_No varchar(10) NOT NULL UNIQUE,
+        DB_Email varchar(30) NOT NULL UNIQUE,
+        DB_Address varchar(200) NOT NULL,
+        CONSTRAINT Deliveryboy_PK PRIMARY KEY(DB_ID)
+       );
+       
+       
+CREATE TABLE IF NOT EXISTS DeliveryRecord (
+    DeliveryRecord_id INT AUTO_INCREMENT,
+    cart_id INT,
+    DB_id INT,
+    Delivery_Status VARCHAR(20) NOT NULL,
+    CONSTRAINT DeliveryRecord_PK PRIMARY KEY (DeliveryRecord_id),
+    CONSTRAINT DeliveryRecord_cart_FK FOREIGN KEY (cart_id) REFERENCES cart(cart_id),
+    CONSTRAINT DeliveryRecord_DB_FK FOREIGN KEY (DB_id) REFERENCES Deliveryboy(DB_id)
+);
+
+Create Table if not exists Feedback (
+		Feedback_id INT AUTO_INCREMENT,
+        cart_id INT,
+        Restaurant_id INT,
+        Customer_Id INT,
+        Rating INT,
+        Feedback_issue varchar(150),
+        FeedbackDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT feedback_PK PRIMARY KEY (Feedback_id),
+        FOREIGN KEY(Cart_id) references Cart(cart_id),
+        FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id)
+        );
